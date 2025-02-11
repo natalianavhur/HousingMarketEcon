@@ -1,0 +1,81 @@
+GDP dataset.
+
+The dataset includes:
+
+Overall GDP indicators (T10101 - T10111)
+Breakdown by product type (T10201 - T10206)
+Breakdown by sector (T10301 - T10306)
+Price indexes & inflation indicators (T10404, T10604, etc.)
+National income and corporate data (T11000 - T11600)
+
+
+
+Time Series Analysis (GDP Over Time)
+Track GDP trends using "T10105" (Gross Domestic Product).
+Compare annual vs. quarterly GDP (T10105-A vs. T10105-Q).
+Calculate growth rates (T10101 - Percent Change in GDP).
+
+
+library(ggplot2)
+gdp_annual <- gdp_data_list[["T10105-A"]]
+colnames(gdp_annual) <- make.names(colnames(gdp_annual))
+gdp_annual <- gdp_annual %>% rename(Date = 1, GDP = 2)
+
+ggplot(gdp_annual, aes(x = Date, y = GDP)) +
+  geom_line() +
+  labs(title = "Annual GDP Trends", x = "Year", y = "GDP (Billions)")
+
+
+Sector Contribution to GDP
+Identify the fastest-growing sectors using "T10305" (Gross Value Added by Sector).
+Compare GDP share by sector over time.
+
+sector_gdp <- gdp_data_list[["T10305-A"]]
+ggplot(sector_gdp, aes(x = Date, y = Manufacturing)) +
+  geom_line() +
+  labs(title = "Manufacturing Sector GDP Contribution", x = "Year", y = "GDP (Billions)")
+
+
+Inflation & Price Indexes
+Use "T10104" (Price Indexes for GDP) and "T10604" (Price Indexes for Purchases).
+Compare real vs. nominal GDP using "T10106" (Chained Dollars).
+
+price_index <- gdp_data_list[["T10104-A"]]
+ggplot(price_index, aes(x = Date, y = PriceIndex)) +
+  geom_line() +
+  labs(title = "GDP Price Index Over Time", x = "Year", y = "Index Value")
+
+
+Recession Analysis
+Look for negative GDP growth in "T10101" (Percent Change in GDP).
+Identify declining economic activity using "T10405" (Relation of GDP to Purchases).
+
+gdp_growth <- gdp_data_list[["T10101-A"]]
+gdp_growth <- gdp_growth %>% mutate(Recession = ifelse(GrowthRate < 0, "Recession", "Growth"))
+
+ggplot(gdp_growth, aes(x = Date, y = GrowthRate, color = Recession)) +
+  geom_line() +
+  labs(title = "GDP Growth Rate and Recession Periods", x = "Year", y = "Growth Rate (%)")
+
+
+Predicting Future GDP
+Apply time series forecasting (auto.arima()) on "T10105".
+
+library(forecast)
+gdp_ts <- ts(gdp_annual$GDP, start = min(gdp_annual$Date), frequency = 1)
+model <- auto.arima(gdp_ts)
+forecasted_gdp <- forecast(model, h = 5)
+autoplot(forecasted_gdp)
+
+
+###############
+cpsaat01
+cpsaat37
+cpsaat38
+cpsaat18 / cpsaat18b
+cpsaat21 / cpsaat22
+cpsaat23
+cpsaat24, cpsaat25, cpsaat26, cpsaat27, cpsaat28, cpsaat29, cpsaat30, cpsaat31, cpsaat32, cpsaat33, cpsaat34
+
+
+

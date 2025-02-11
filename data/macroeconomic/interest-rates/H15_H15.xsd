@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.federalreserve.gov/structure/compact/H15_H15"
+   elementFormDefault="qualified" attributeFormDefault="unqualified"
+   xmlns="http://www.federalreserve.gov/structure/compact/H15_H15"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns:frb="http://www.federalreserve.gov/structure/compact/common">
+    <xs:import namespace="http://www.federalreserve.gov/structure/compact/common" schemaLocation="frb_common.xsd"/>
+
+    <xs:element name="Series" type="SeriesType" substitutionGroup="frb:Series"/>
+    <xs:complexType name="SeriesType">
+        <xs:complexContent>
+            <xs:extension base="frb:SeriesType">
+                <xs:attribute name="INSTRUMENT" type="CL_INST" use="required"/>
+                <xs:attribute name="MATURITY" type="CL_MATURITY" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="CL_INST">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="FF">
+              <xs:annotation>
+                  <xs:documentation>Federal funds</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="NFCP">
+              <xs:annotation>
+                  <xs:documentation>Nonfinancial commercial paper</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="FCP">
+              <xs:annotation>
+                  <xs:documentation>Financial commercial paper</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="CPFFWOUT">
+              <xs:annotation>
+                  <xs:documentation>Nonfinancial or financial posted by CPFF without unsecured credit surcharge</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="CPFFWITH">
+              <xs:annotation>
+                  <xs:documentation>Nonfinancial or financial posted by CPFF with unsecured credit surcharge</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="CP">
+              <xs:annotation>
+                  <xs:documentation>Commercial paper</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="FP">
+              <xs:annotation>
+                  <xs:documentation>Finance paper</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="BA">
+              <xs:annotation>
+                  <xs:documentation>Banker&apos;s acceptances (top rated)</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="CD">
+              <xs:annotation>
+                  <xs:documentation>CDs (secondary market)</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="ED">
+              <xs:annotation>
+                  <xs:documentation>Eurodollar deposits (London)</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="PRIME">
+              <xs:annotation>
+                  <xs:documentation>Bank prime loan</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DWPC">
+              <xs:annotation>
+                  <xs:documentation>Discount window primary credit</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DWB">
+              <xs:annotation>
+                  <xs:documentation>Discount window borrowing</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="AH">
+              <xs:annotation>
+                  <xs:documentation>U.S. government securities/Treasury bills/Auction high</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="TB">
+              <xs:annotation>
+                  <xs:documentation>U.S. government securities/Treasury bills (secondary market)</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="TCMNOM">
+              <xs:annotation>
+                  <xs:documentation>U.S. government securities/Treasury constant maturities/Nominal</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="TCMII">
+              <xs:annotation>
+                  <xs:documentation>U.S. government securities/Treasury constant maturities/Inflation indexed</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="LTNOM">
+              <xs:annotation>
+                  <xs:documentation>U.S. government securities/Nominal/Long-term average</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="LTAVG">
+              <xs:annotation>
+                  <xs:documentation>U.S. government securities/Inflation-indexed/Long-term average</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="COMP">
+              <xs:annotation>
+                  <xs:documentation>U.S. government securities/Composite</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="SWAPS">
+              <xs:annotation>
+                  <xs:documentation>Interest rate swaps</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="AAA">
+              <xs:annotation>
+                  <xs:documentation>Corporate bonds/Moody&apos;s seasoned Aaa</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="BAA">
+              <xs:annotation>
+                  <xs:documentation>Corporate bonds/Moody&apos;s seasoned Baa</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="SL">
+              <xs:annotation>
+                  <xs:documentation>State &amp; local bonds</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="MORTG">
+              <xs:annotation>
+                  <xs:documentation>Conventional mortgages</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="CL_MATURITY">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="O">
+              <xs:annotation>
+                  <xs:documentation>Overnight</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="WK4">
+              <xs:annotation>
+                  <xs:documentation>4-week</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="M1">
+              <xs:annotation>
+                  <xs:documentation>1-month</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="M2">
+              <xs:annotation>
+                  <xs:documentation>2-month</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="M3">
+              <xs:annotation>
+                  <xs:documentation>3-month</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="M6">
+              <xs:annotation>
+                  <xs:documentation>6-month</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y1">
+              <xs:annotation>
+                  <xs:documentation>1-year</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y2">
+              <xs:annotation>
+                  <xs:documentation>2-year</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y3">
+              <xs:annotation>
+                  <xs:documentation>3-year</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y4">
+              <xs:annotation>
+                  <xs:documentation>4-year</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y5">
+              <xs:annotation>
+                  <xs:documentation>5-year</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y7">
+              <xs:annotation>
+                  <xs:documentation>7-year</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y10">
+              <xs:annotation>
+                  <xs:documentation>10-year</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y10P">
+              <xs:annotation>
+                  <xs:documentation>Longer than 10-year</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y20">
+              <xs:annotation>
+                  <xs:documentation>20-year</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y25P">
+              <xs:annotation>
+                  <xs:documentation>25-year and longer</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="Y30">
+              <xs:annotation>
+                  <xs:documentation>30-year</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="NA">
+              <xs:annotation>
+                  <xs:documentation>Not applicable</xs:documentation>
+              </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
