@@ -1,0 +1,249 @@
+---
+title: "GDP Data Analysis"
+author: "Natalia Navarrete"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+---
+
+
+# 1. Introduction
+
+
+The GDP spreadsheet contains a list of tables related to different gross domestic product (gdp) and national income data.
+
+##Structure of the Spreadsheet
+Sheet title: Unique identifier for each table such as T10101.
+Sheet rows: The description of thetable, which indicates the type of GDP-related data it contains.
+
+##Categories of Data in Spreadsheet
+The data is categorized into several major topics:
+1. Overall GDP Trends ()
+  - 
+  
+2.
+
+3.
+
+4.
+
+5.
+
+6.
+
+7.
+
+8.
+
+The gdp database includes 
+What this dataset is?
+Purpose of my analysis?
+How the document is structured.
+
+GDP dataset.
+
+
+The dataset includes:
+
+Overall GDP indicators (T10101 - T10111)
+Breakdown by product type (T10201 - T10206)
+Breakdown by sector (T10301 - T10306)
+Price indexes & inflation indicators (T10404, T10604, etc.)
+National income and corporate data (T11000 - T11600)
+
+# 2. Libraries
+Explain which libraries you're using and why?
+
+```{r libraries}
+
+library(readxl)
+library(dplyr)
+library(here)
+library(purrr)
+library(tidyr)
+library(ggplot2)
+library(lubridate)
+library(stringr)
+library(tibble)
+```
+
+# 3. Data Import
+Explain the data source, the file structure, and how you are importing it. 
+```{r GDP Data}
+gdp_path <- file.path("data", "macroeconomic", "gdp", "gdp_domestic_product_and_income.xlsx")
+
+reshape_gdp <- function(sheet_name, skip_rows = 7) {
+  # Determine frequency from sheet name:
+  frequency <- ifelse(grepl("-A$", sheet_name), "Annual",
+                      ifelse(grepl("-Q$", sheet_name), "Quarterly", NA))
+  
+  # Get the table code by removing the trailing "-A" or "-Q"
+  table_code <- sub("-[AQ]$", "", sheet_name)
+  
+  # Read the sheet; skip the first 7 rows so that row 8 (the header) is read as data
+  raw_data <- read_excel(gdp_path, sheet = sheet_name, skip = skip_rows, col_names = FALSE)
+  
+  # Extract the header row (row 8 in Excel becomes row 1 here)
+  header <- as.character(raw_data[1, ])
+  header[1] <- "Line"        
+  header[2] <- "Indicator"   
+  header[3] <- "Code"        
+  colnames(raw_data) <- header
+  
+  # Remove the header row from the data
+  data_clean <- raw_data[-1, ]
+  
+  # Pivot the data from wide to long format.
+  tidy_data <- data_clean %>%
+    pivot_longer(
+      cols = -c(Line, Indicator, Code),
+      names_to = "Date",
+      values_to = "Value"
+    )
+  
+  # Ensure the Date column is cleaned up
+  tidy_data <- tidy_data %>%
+    mutate(Date = str_trim(Date))  # Remove spaces
+  
+  # Now, filter the rows so that only valid date headers are kept.
+  if (frequency == "Annual") {
+    tidy_data <- tidy_data %>% filter(grepl("^[0-9]{4}$", Date))  # Keep YYYY format
+  } else if (frequency == "Quarterly") {
+    tidy_data <- tidy_data %>% filter(grepl("^[0-9]{4}Q[1-4]$", Date))  # Keep YYYYQX format
+  }
+  
+  # Convert Date and Value columns appropriately
+  tidy_data <- tidy_data %>%
+    mutate(
+      Date = case_when(
+        frequency == "Annual" ~ as.character(Date),  # Store years as strings
+        frequency == "Quarterly" ~ paste0(substr(Date, 1, 4), "-Q", substr(Date, 6, 6)),  # Store "YYYY-QX"
+        TRUE ~ NA_character_
+      ),
+      Value = suppressWarnings(as.numeric(Value)),  # Convert Value to numeric
+      Frequency = frequency,
+      Sheet = sheet_name,
+      TableCode = table_code
+    )
+  
+  # Debugging: Print detected unique dates to verify correctness
+  print(paste("Sheet:", sheet_name, "- Unique Dates:", paste(unique(tidy_data$Date)[1:10], collapse = ", ")))
+  
+  return(tidy_data)
+}
+```
+
+# 4. Data Wrangling & Overview
+Show how to filter or create subsets.
+Summary statistics
+Explain meaning of these subsets.
+
+```{r filtering data,}
+# Get all sheet names and remove non-data sheets (like "Contents")
+all_sheets <- excel_sheets(gdp_path)
+data_sheets <- all_sheets[all_sheets != "Contents"]
+
+# Load all sheets into a list
+gdp_list <- map(data_sheets, ~ reshape_gdp(.x, skip_rows = 7))
+
+# Combine all sheets into one data frame
+gdp_all <- bind_rows(gdp_list)
+
+# Now you can filter for the type of data you need:
+gdp_annual <- gdp_all %>% filter(Frequency == "Annual")
+gdp_quarterly <- gdp_all %>% filter(Frequency == "Quarterly")
+gdp_T10105   <- gdp_all %>% filter(TableCode == "T10105")
+```
+
+# 5. Exploratory Data Analysis
+Use subsections to explore specific topics.
+5.1 Overall GDP Trends
+5.2 Sector Breakdown
+5.3 Price Indexes & Inflation
+
+```{r exploring data}
+# Check the results
+print(head(gdp_all))
+print(head(gdp_annual))
+print(head(gdp_quarterly))
+print(head(gdp_T10105))
+
+```
+
+
+# 6. Basic Statistical / Time Series
+You can include any statistical tests
+6.1 Stationarity Tests
+6.2 Simple Forecasting
+
+
+Time Series Analysis (GDP Over Time)
+Track GDP trends using "T10105" (Gross Domestic Product).
+Compare annual vs. quarterly GDP (T10105-A vs. T10105-Q).
+Calculate growth rates (T10101 - Percent Change in GDP).
+
+
+library(ggplot2)
+gdp_annual <- gdp_data_list[["T10105-A"]]
+colnames(gdp_annual) <- make.names(colnames(gdp_annual))
+gdp_annual <- gdp_annual %>% rename(Date = 1, GDP = 2)
+
+ggplot(gdp_annual, aes(x = Date, y = GDP)) +
+  geom_line() +
+  labs(title = "Annual GDP Trends", x = "Year", y = "GDP (Billions)")
+
+
+Sector Contribution to GDP
+Identify the fastest-growing sectors using "T10305" (Gross Value Added by Sector).
+Compare GDP share by sector over time.
+
+sector_gdp <- gdp_data_list[["T10305-A"]]
+ggplot(sector_gdp, aes(x = Date, y = Manufacturing)) +
+  geom_line() +
+  labs(title = "Manufacturing Sector GDP Contribution", x = "Year", y = "GDP (Billions)")
+
+
+Inflation & Price Indexes
+Use "T10104" (Price Indexes for GDP) and "T10604" (Price Indexes for Purchases).
+Compare real vs. nominal GDP using "T10106" (Chained Dollars).
+
+price_index <- gdp_data_list[["T10104-A"]]
+ggplot(price_index, aes(x = Date, y = PriceIndex)) +
+  geom_line() +
+  labs(title = "GDP Price Index Over Time", x = "Year", y = "Index Value")
+
+
+Recession Analysis
+Look for negative GDP growth in "T10101" (Percent Change in GDP).
+Identify declining economic activity using "T10405" (Relation of GDP to Purchases).
+
+gdp_growth <- gdp_data_list[["T10101-A"]]
+gdp_growth <- gdp_growth %>% mutate(Recession = ifelse(GrowthRate < 0, "Recession", "Growth"))
+
+ggplot(gdp_growth, aes(x = Date, y = GrowthRate, color = Recession)) +
+  geom_line() +
+  labs(title = "GDP Growth Rate and Recession Periods", x = "Year", y = "Growth Rate (%)")
+
+
+Predicting Future GDP
+Apply time series forecasting (auto.arima()) on "T10105".
+
+library(forecast)
+gdp_ts <- ts(gdp_annual$GDP, start = min(gdp_annual$Date), frequency = 1)
+model <- auto.arima(gdp_ts)
+forecasted_gdp <- forecast(model, h = 5)
+autoplot(forecasted_gdp)
+
+# 7 Conclusions and Next Steps
+Summarize key insights from your analysis:
+Major trends or shifts in GDP.
+Which sectors drive GDP growth.
+Relationship between price indexes and nominal/real GDP.
+Any preliminary forecast results.
+Suggest next steps or more advanced analyses (e.g., advanced econometric modeling, comparison with external data like unemployment rates or interest rates).
+
+# 8 Appendix
+Include any additional tables, charts, or diagnostic checks you want to show but keep out of the main narrative.
+You might also include session info for reproducibility.
+

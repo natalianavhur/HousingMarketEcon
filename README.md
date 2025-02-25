@@ -13,10 +13,8 @@ Libraries:
 - Python: pandas, statsmodels, scikit-learn, matplotlib
 
 Tools:
-
 - RStudio
 - SQLite (for macroeconomic data storage)
-
 
 # Useful Websites
 
@@ -26,8 +24,6 @@ Tools:
 - [U.S. Census Bureau housing data](http://url.link.goes.here)
 
 # Future Work
-
-{Make a list of things that you need to fix, improve, and add in the future.}
 
 - Enhance Data Cleaning
 - Expand Predictive Models
